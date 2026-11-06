@@ -1,0 +1,16 @@
+import { z } from 'zod';
+export type Lang = 'en'|'zh';
+export const categories=['Condominium','Landed','Commercial','Industrial/Factory','Land'] as const;
+export const listingSchema=z.object({id:z.string().uuid(),slug:z.string().min(3).max(100).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),title:z.string().min(3).max(150),titleZh:z.string().min(2).max(150),location:z.string().min(2).max(100),locationZh:z.string().min(2).max(100),category:z.enum(categories),status:z.enum(['sale','rent','invest']),price:z.number().positive().max(1e12),area:z.number().positive().max(1e9),rooms:z.string().max(20),bedrooms:z.number().int().min(0).max(100).nullable().default(null),baths:z.number().int().min(0).max(100).nullable(),description:z.string().min(10).max(5000),descriptionZh:z.string().min(5).max(5000),images:z.array(z.object({src:z.string().regex(/^\/api\/images\/[a-f0-9-]{36}$/),alt:z.string().min(3).max(200),altZh:z.string().min(2).max(200)})).max(12),demo:z.boolean(),published:z.boolean(),featured:z.boolean()});
+export type Property=z.infer<typeof listingSchema>;
+export const leadSchema=z.object({name:z.string().trim().min(2).max(100),phone:z.string().trim().regex(/^\+?[\d\s()-]{8,22}$/),enquiry:z.enum(['buy','sell','rent','invest','management']),message:z.string().trim().min(10).max(2000),consent:z.literal(true),website:z.string().max(0).optional()});
+export type LeadInput=z.infer<typeof leadSchema>;
+export type Lead=Omit<LeadInput,'website'> & {id:string;status:'new'|'contacted'|'closed';createdAt:string};
+export type Filters=Record<string,string|undefined>;
+export function filterProperties(items:Property[],f:Filters){return items.filter(p=>p.published&&(!f.status||p.status===f.status)&&(!f.location||p.location.toLowerCase().includes(f.location.toLowerCase()))&&(!f.category||p.category===f.category)&&(!f.minPrice||p.price>=Number(f.minPrice))&&(!f.maxPrice||p.price<=Number(f.maxPrice))&&(!f.bedrooms||p.bedrooms!==null&&p.bedrooms!==undefined&&p.bedrooms>=Number(f.bedrooms))&&(!f.minArea||p.area>=Number(f.minArea))&&(!f.maxArea||p.area<=Number(f.maxArea)));}
+export function grossYield(price:number,rent:number){if(!Number.isFinite(price)||!Number.isFinite(rent)||price<=0||rent<0)return null;return rent*12/price*100;}
+export function money(n:number,lang:Lang='en'){return 'RM '+new Intl.NumberFormat(lang==='zh'?'zh-CN':'en-MY',{maximumFractionDigits:0}).format(n);}
+export function whatsapp(message:string){const n=(process.env.NEXT_PUBLIC_WHATSAPP_NUMBER||'').replace(/\D/g,'');return n.length>=8?`https://wa.me/${n}?text=${encodeURIComponent(message)}`:null;}
+
+export function validFilters(f:Filters){for(const key of ['minPrice','maxPrice','bedrooms','minArea','maxArea']){if(!f[key])continue;const n=Number(f[key]);if(!Number.isFinite(n)||n<0||n>1e12||(key==='bedrooms'&&(!Number.isInteger(n)||n>100)))return false;}if(f.status&&!['sale','rent','invest'].includes(f.status))return false;if(f.category&&!categories.includes(f.category as typeof categories[number]))return false;for(const [min,max] of [['minPrice','maxPrice'],['minArea','maxArea']])if(f[min]&&f[max]&&Number(f[min])>Number(f[max]))return false;return true;}
+export function contactNumber(){const n=(process.env.NEXT_PUBLIC_WHATSAPP_NUMBER||'').replace(/\D/g,'');return n?'+'+n:'';}

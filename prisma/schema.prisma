@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model Listing {
+  id        String @id
+  slug      String @unique
+  published Boolean @default(false)
+  featured  Boolean @default(false)
+  data      Json
+  updatedAt DateTime @updatedAt
+}
+model Lead {
+  id        String @id
+  name      String
+  phone     String
+  enquiry   String
+  message   String
+  consent   Boolean
+  status    String @default("new")
+  createdAt DateTime @default(now())
+}
+model Image {
+  id        String @id
+  mime      String
+  bytes     Bytes
+  createdAt DateTime @default(now())
+}
+model RateBucket {
+  key       String @id
+  count     Int @default(0)
+  expiresAt DateTime
+}

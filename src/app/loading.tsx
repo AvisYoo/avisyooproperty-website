@@ -1,0 +1,1 @@
+export default function Loading(){return <div className="container section" role="status" aria-label="Loading / 加载中"><div className="skeleton"/><div className="skeleton short"/><p>Loading / 加载中…</p></div>}
