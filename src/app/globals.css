@@ -8,3 +8,5 @@
 .hero-photo{object-fit:cover;object-position:center;opacity:.8}.hero:after{background:linear-gradient(90deg,#091c30f0 0%,#10253cba 50%,#14273d40 100%)}
 
 .photo-credit a{display:inline!important;font-size:9px!important}.photo-credit{font-size:9px!important}
+
+.portal-links{display:flex;align-items:center;justify-content:space-between;gap:28px;padding:26px 28px;margin-bottom:28px;background:#fffdf8;border:1px solid #d9cfba;border-top:2px solid var(--gold)}.portal-links .eyebrow{margin-bottom:9px}.portal-links h3{font-size:25px}.portal-links p:not(.eyebrow){font-size:12px;margin-top:10px;max-width:630px}.portal-actions{display:flex;gap:12px;flex-shrink:0}.portal-actions .button{gap:20px;min-width:125px}@media(max-width:1000px){.portal-links{align-items:flex-start;flex-direction:column}}@media(max-width:650px){.portal-links{padding:23px 20px;gap:22px}.portal-links h3{font-size:25px}.portal-actions{width:100%;flex-wrap:wrap}.portal-actions .button{flex:1;min-width:120px}.portal-links p:not(.eyebrow){font-size:11px}}
